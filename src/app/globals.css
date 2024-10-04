@@ -76,3 +76,8 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+.worldcoin-logo-login {
+  margin-left: 0.5rem;
+  filter: brightness(0) invert(1);
+}

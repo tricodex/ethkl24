@@ -17,9 +17,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-      <TopNav />
 
         <NextAuthSessionProvider>
+        <TopNav />
+
           <main className="container mx-auto p-4">
             {children}
           </main>
