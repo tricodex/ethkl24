@@ -46,13 +46,13 @@ function WorldCoinAuthButton() {
 
 function TopNav() {
     return (
-        <nav className="flex justify-between items-center px-4 py-1 bg-gradient-to-r from-[#767676] to-[#15162c] text-white">
+        <nav className="flex justify-between items-center px-2 py-3 bg-gradient-to-r from-[#101010] to-[#15162c] text-white">
             <div className="flex space-x-4">
             <Link href="/" className="text-xl font-bold flex items-center gap-1">
-            <span>HEAD</span>
-                    <span><Image src="/head.svg" alt="HEAD logo" width={24} height={16} /></span></Link>
-                <Link href="/about" className="mr-4">About</Link>
-                <Link href="/contact">Contact</Link>
+            <span className='logo-text'>HEAD</span>
+                    <span>          <Image src="/head.svg" alt="HEAD logo" width={34} height={34} />
+                    </span></Link>
+                
             </div>
             <div className="flex items-center">
                 <WorldCoinAuthButton />

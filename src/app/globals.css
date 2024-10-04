@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Bowlby+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Kay+Pho+Du:wght@400;500;600;700&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -80,4 +82,158 @@ body {
 .worldcoin-logo-login {
   margin-left: 0.5rem;
   filter: brightness(0) invert(1);
+}
+
+.logo-text {
+  font-family: "Bowlby One", sans-serif;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-left: 0.5rem;
+}
+
+
+.hero-showcase {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #111;
+  overflow: hidden;
+}
+
+.hero-flashlight-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  isolation: isolate;
+}
+
+.hero-image {
+  filter: brightness(70%);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  mix-blend-mode: overlay;
+}
+
+.hero-flashlight-mask {
+  position: absolute;
+  inset: 0;
+  mix-blend-mode: overlay;
+  animation: hero-flash 2.5s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes hero-flash {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5); }
+}
+
+.hero-text {
+  position: relative;
+  z-index: 10;
+  color: #fff;
+  max-width: 700px;
+  text-align: center;
+}
+
+.hero-title {
+  font-size: 5em;
+  font-weight: 800;
+  line-height: 1em;
+  text-transform: uppercase;
+  font-family: "Bowlby One", sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hero-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hero-subtitle {
+  font-size: 1.5em;
+  font-weight: 700;
+  line-height: 1.2em;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.hero-description {
+  font-family: "Kay Pho Du", serif;
+  font-size: 1.1em;
+  margin: 20px 0;
+  font-weight: 400;
+}
+
+.hero-button {
+  display: inline-block;
+  font-size: 1em;
+  background: #fff;
+  padding: 10px 30px;
+  text-transform: uppercase;
+  text-decoration: none;
+  font-weight: 500;
+  margin-top: 20px;
+  color: #111;
+  letter-spacing: 2px;
+  transition: 0.2s;
+}
+
+.hero-button:hover {
+  letter-spacing: 4px;
+  background-color: #4a90e2;
+  color: #fff;
+}
+
+.hero-social {
+  position: absolute;
+  z-index: 10;
+  bottom: 20px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.hero-social li {
+  list-style: none;
+}
+
+.hero-social li a {
+  display: inline-block;
+  transition: 0.3s;
+}
+
+.hero-social li a:hover {
+  transform: translateY(-5px);
+}
+
+@media (max-width: 768px) {
+  .hero-showcase {
+    padding: 40px;
+  }
+  .hero-title {
+    font-size: 3em;
+  }
+  .hero-subtitle {
+    font-size: 1.2em;
+  }
+  .hero-description {
+    font-size: 1em;
+  }
+
 }
