@@ -46,16 +46,18 @@ function WorldCoinAuthButton() {
 
 function TopNav() {
     return (
-    <nav className="flex justify-between items-center px-4 py-3 bg-gradient-to-r from-[#2e026d] to-[#15162c] text-white">
-      <div className="flex space-x-4">
-        <Link href="/" className="mr-4">PMA</Link>
-        <Link href="/about" className="mr-4">About</Link>
-        <Link href="/contact">Contact</Link>
-      </div>
-      <div>
-        <WorldCoinAuthButton />
-      </div>
-    </nav>
+        <nav className="flex justify-between items-center px-4 py-1 bg-gradient-to-r from-[#767676] to-[#15162c] text-white">
+            <div className="flex space-x-4">
+            <Link href="/" className="text-xl font-bold flex items-center gap-1">
+            <span>HEAD</span>
+                    <span><Image src="/head.svg" alt="HEAD logo" width={24} height={16} /></span></Link>
+                <Link href="/about" className="mr-4">About</Link>
+                <Link href="/contact">Contact</Link>
+            </div>
+            <div className="flex items-center">
+                <WorldCoinAuthButton />
+            </div>
+        </nav>
     );
 }
 

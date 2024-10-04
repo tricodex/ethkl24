@@ -1,9 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { Bell, Building, Calendar, DollarSign, FileText, Home, Menu, Settings, Users } from "lucide-react"
+import { Building, ChevronDown, CreditCard, FileText, Home, Menu, MessageSquare, Settings, Users, Vote } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import {
   DropdownMenu,
@@ -22,8 +23,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import { Progress } from "@/components/ui/progress"
 
-export default function PropertyManagementDashboard() {
+export default function HousingAssociationDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   return (
@@ -36,7 +38,7 @@ export default function PropertyManagementDashboard() {
       >
         <div className="flex h-full flex-col">
           <div className="flex items-center justify-between px-4 py-6">
-            <span className="text-2xl font-semibold">PropManage</span>
+            <span className="text-2xl font-semibold">HEAD Homes</span>
             <Button variant="ghost" size="icon" onClick={() => setSidebarOpen(false)} className="lg:hidden">
               <Menu className="h-6 w-6" />
             </Button>
@@ -45,10 +47,11 @@ export default function PropertyManagementDashboard() {
             {[
               { icon: Home, label: "Dashboard" },
               { icon: Building, label: "Properties" },
-              { icon: Users, label: "Tenants" },
-              { icon: DollarSign, label: "Finances" },
+              { icon: Users, label: "Residents" },
+              { icon: CreditCard, label: "Payments" },
+              { icon: Vote, label: "Proposals" },
+              { icon: MessageSquare, label: "HEAD Buddy" },
               { icon: FileText, label: "Documents" },
-              { icon: Calendar, label: "Calendar" },
               { icon: Settings, label: "Settings" },
             ].map((item) => (
               <Button key={item.label} variant="ghost" className="w-full justify-start">
@@ -69,13 +72,11 @@ export default function PropertyManagementDashboard() {
               <Menu className="h-6 w-6" />
             </Button>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon">
-                <Bell className="h-5 w-5" />
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-                    ID
+                  <Button variant="ghost">
+                    John Doe
+                    <ChevronDown className="ml-2 h-4 w-4" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="w-56" align="end" forceMount>
@@ -97,13 +98,13 @@ export default function PropertyManagementDashboard() {
 
         {/* Dashboard Content */}
         <main className="p-6">
-          <h1 className="mb-6 text-3xl font-bold">Dashboard</h1>
+          <h1 className="mb-6 text-3xl font-bold">Housing Association Dashboard</h1>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {[
-              { title: "Total Properties", value: "24", description: "4 new this month" },
-              { title: "Occupied Units", value: "142", description: "86% occupancy rate" },
-              { title: "Pending Maintenance", value: "8", description: "3 urgent requests" },
-              { title: "Monthly Revenue", value: "$52,450", description: "12% increase from last month" },
+              { title: "Total Properties", value: "5", description: "1 new this month" },
+              { title: "Total Residents", value: "120", description: "98% occupancy rate" },
+              { title: "Active Proposals", value: "3", description: "1 pending approval" },
+              { title: "Monthly Service Payments", value: "$24,000", description: "95% collection rate" },
             ].map((item, index) => (
               <Card key={index}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -118,122 +119,92 @@ export default function PropertyManagementDashboard() {
           </div>
 
           <div className="mt-6">
-            <Tabs defaultValue="properties" className="space-y-4">
+            <Tabs defaultValue="payments" className="space-y-4">
               <TabsList>
-                <TabsTrigger value="properties">Properties</TabsTrigger>
-                <TabsTrigger value="tenants">Tenants</TabsTrigger>
-                <TabsTrigger value="finances">Finances</TabsTrigger>
+                <TabsTrigger value="payments">Service Payments</TabsTrigger>
+                <TabsTrigger value="proposals">Proposals</TabsTrigger>
+                <TabsTrigger value="ai-assistant">AI Assistant</TabsTrigger>
               </TabsList>
-              <TabsContent value="properties" className="space-y-4">
+              <TabsContent value="payments" className="space-y-4">
                 <div className="flex justify-between">
-                  <h2 className="text-xl font-semibold">Property List</h2>
-                  <Button>Add Property</Button>
+                  <h2 className="text-xl font-semibold">Monthly Service Payments</h2>
+                  <Button>View All</Button>
                 </div>
                 <Table>
-                  <TableCaption>A list of your properties.</TableCaption>
+                  <TableCaption>Recent service payments tracked on the blockchain.</TableCaption>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Address</TableHead>
-                      <TableHead>Units</TableHead>
-                      <TableHead>Occupancy</TableHead>
-                      <TableHead className="text-right">Monthly Revenue</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {/* placeholder */}
-                    {[
-                      { address: "123 Main St", units: 12, occupancy: "92%", revenue: "$14,400" },
-                      { address: "456 Elm St", units: 8, occupancy: "75%", revenue: "$7,200" },
-                      { address: "789 Oak Ave", units: 20, occupancy: "95%", revenue: "$22,800" },
-                    ].map((property, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="font-medium">{property.address}</TableCell>
-                        <TableCell>{property.units}</TableCell>
-                        <TableCell>{property.occupancy}</TableCell>
-                        <TableCell className="text-right">{property.revenue}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TabsContent>
-              <TabsContent value="tenants" className="space-y-4">
-                <div className="flex justify-between">
-                  <h2 className="text-xl font-semibold">Tenant List</h2>
-                  <Button>Add Tenant</Button>
-                </div>
-                <Table>
-                  <TableCaption>A list of your tenants.</TableCaption>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
+                      <TableHead>Resident</TableHead>
                       <TableHead>Unit</TableHead>
-                      <TableHead>Lease End</TableHead>
-                      <TableHead className="text-right">Rent</TableHead>
+                      <TableHead>Amount</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead>Transaction Hash</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {[
-                      { name: "Alice Johnson", unit: "Apt 101", leaseEnd: "12/31/2023", rent: "$1,200" },
-                      { name: "Bob Smith", unit: "Apt 202", leaseEnd: "06/30/2024", rent: "$1,400" },
-                      { name: "Carol Williams", unit: "Apt 303", leaseEnd: "03/31/2024", rent: "$1,300" },
-                    ].map((tenant, index) => (
+                      { resident: "Alice Johnson", unit: "A101", amount: "$200", status: "Paid", hash: "0x1234...5678" },
+                      { resident: "Bob Smith", unit: "B205", amount: "$200", status: "Pending", hash: "0xabcd...efgh" },
+                      { resident: "Carol Williams", unit: "C310", amount: "$200", status: "Paid", hash: "0x9876...5432" },
+                    ].map((payment, index) => (
                       <TableRow key={index}>
-                        <TableCell className="font-medium">{tenant.name}</TableCell>
-                        <TableCell>{tenant.unit}</TableCell>
-                        <TableCell>{tenant.leaseEnd}</TableCell>
-                        <TableCell className="text-right">{tenant.rent}</TableCell>
+                        <TableCell className="font-medium">{payment.resident}</TableCell>
+                        <TableCell>{payment.unit}</TableCell>
+                        <TableCell>{payment.amount}</TableCell>
+                        <TableCell>{payment.status}</TableCell>
+                        <TableCell className="font-mono text-xs">{payment.hash}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
                 </Table>
               </TabsContent>
-              <TabsContent value="finances" className="space-y-4">
+              <TabsContent value="proposals" className="space-y-4">
                 <div className="flex justify-between">
-                  <h2 className="text-xl font-semibold">Financial Overview</h2>
-                  <Button>Generate Report</Button>
+                  <h2 className="text-xl font-semibold">Active Proposals</h2>
+                  <Button>Create New Proposal</Button>
                 </div>
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">$54,231</div>
-                      <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Expenses</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">$12,345</div>
-                      <p className="text-xs text-muted-foreground">+4.75% from last month</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Net Income</CardTitle>
-                      <DollarSign className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">$41,886</div>
-                      <p className="text-xs text-muted-foreground">+14.2% from last month</p>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium">Occupancy Rate</CardTitle>
-                      <Users className="h-4 w-4 text-muted-foreground" />
-                    </CardHeader>
-                    <CardContent>
-                      <div className="text-2xl font-bold">92%</div>
-                      <p className="text-xs text-muted-foreground">+2.5% from last month</p>
-                    </CardContent>
-                  </Card>
+                <div className="grid gap-4">
+                  {[
+                    { title: "Upgrade Lobby Furniture", votes: 45, threshold: 60, description: "Replace old furniture in the main lobby with modern, comfortable seating." },
+                    { title: "Install Solar Panels", votes: 72, threshold: 70, description: "Install solar panels on the roof to reduce electricity costs and improve sustainability." },
+                    { title: "Hire New Security Staff", votes: 30, threshold: 65, description: "Hire additional security personnel to improve safety in the complex." },
+                  ].map((proposal, index) => (
+                    <Card key={index}>
+                      <CardHeader>
+                        <CardTitle>{proposal.title}</CardTitle>
+                        <CardDescription>{proposal.description}</CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center justify-between">
+                          <span>Votes: {proposal.votes}/{proposal.threshold}</span>
+                          <span>{Math.round((proposal.votes / proposal.threshold) * 100)}%</span>
+                        </div>
+                        <Progress value={(proposal.votes / proposal.threshold) * 100} className="mt-2" />
+                        <Button className="mt-4 w-full">Vote</Button>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
+              </TabsContent>
+              <TabsContent value="ai-assistant" className="space-y-4">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Assistant</CardTitle>
+                    <CardDescription>Get help with proposals or ask questions about your property.</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="border rounded p-4 bg-muted">
+                        <p className="font-semibold">AI:</p>
+                        <p>Hello! How can I assist you today? Would you like help drafting a proposal or do you have any questions about your property?</p>
+                      </div>
+                      <div className="flex space-x-2">
+                        <Input placeholder="Type your message here..." />
+                        <Button>Send</Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </TabsContent>
             </Tabs>
           </div>
