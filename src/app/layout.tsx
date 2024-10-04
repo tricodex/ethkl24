@@ -2,6 +2,7 @@
 import NextAuthSessionProvider from '@/components/auth-provider';
 import './globals.css';
 import type { Metadata } from 'next';
+import TopNav from './_components/top-nav';
 
 export const metadata: Metadata = {
   title: "PMDA",
@@ -16,6 +17,8 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
+      <TopNav />
+
         <NextAuthSessionProvider>
           <main className="container mx-auto p-4">
             {children}
