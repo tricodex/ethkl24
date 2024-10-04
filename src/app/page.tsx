@@ -1,15 +1,15 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import WorldCoinAuthButton from './_components/auth-button';
 
-const LandingPage: React.FC = () => {
+const FlashlightEffect = React.memo(() => {
   const [flashPosition, setFlashPosition] = useState({ x: '50%', y: '50%' });
-  const { data: session } = useSession();
 
   useEffect(() => {
     const flashPositions = [
@@ -30,32 +30,64 @@ const LandingPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="hero-showcase">
-      <div className="hero-flashlight-container">
+    <div className="hero-flashlight-container">
+      <Image
+        src="/head-homes.webp"
+        alt="HEAD bg"
+        layout="fill"
+        objectFit="cover"
+        className="hero-image"
+      />
+      <div className="hero-overlay"></div>
+      <div
+        className="hero-flashlight-mask"
+        style={{
+          '--mask-position-x': flashPosition.x,
+          '--mask-position-y': flashPosition.y,
+        } as React.CSSProperties}
+      >
         <Image
           src="/head-homes.webp"
-          alt="HEAD bg"
+          alt="HEAD homes overlay"
           layout="fill"
           objectFit="cover"
-          className="hero-image"
         />
-        <div className="hero-overlay"></div>
-        <div
-          className="hero-flashlight-mask"
-          style={{
-            maskImage: `radial-gradient(circle 15vmin at ${flashPosition.x} ${flashPosition.y}, black, transparent)`,
-            WebkitMaskImage: `radial-gradient(circle 15vmin at ${flashPosition.x} ${flashPosition.y}, black, transparent)`,
-          }}
-        >
-          <Image
-            src="/head-homes.webp"
-            alt="HEAD homes overlay"
-            layout="fill"
-            objectFit="cover"
-          />
-        </div>
       </div>
-      
+    </div>
+  );
+});
+
+FlashlightEffect.displayName = 'FlashlightEffect';
+
+const AuthButton = React.memo(({ children }: { children: React.ReactNode }) => (
+  <AlertDialog>
+    <AlertDialogTrigger asChild>
+      <Button className="hero-button">{children}</Button>
+    </AlertDialogTrigger>
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Authentication Required</AlertDialogTitle>
+        <AlertDialogDescription>
+          You need to be logged in to access this feature. Would you like to sign in now?
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction>
+          <WorldCoinAuthButton />
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+));
+
+AuthButton.displayName = 'AuthButton';
+
+const LandingPage: React.FC = () => {
+  const { data: session } = useSession();
+
+  const content = useMemo(() => (
+    <>
       <div className="hero-text">
         <h2 className="hero-title">
           <span>Let&apos;s</span>
@@ -65,38 +97,49 @@ const LandingPage: React.FC = () => {
           </span>
         </h2>
         <h3 className="hero-subtitle">Housing Estate Association Decentralized</h3>
-        <p className="hero-description">Live in a housing estate where you want to HEAD home. Blockchain-based housing estate budget management, resident finance governace, and Homy powered by ORA Onchain-AI Oracle.</p>
-        {session ? (
-          <Link href="/dashboard" passHref>
-            <Button className="hero-button">Housing Estate Dashboard</Button>
-          </Link>
-        ) : (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button className="hero-button">Housing Estate Dashboard</Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Authentication Required</AlertDialogTitle>
-                <AlertDialogDescription>
-                  You need to be logged in to access your estate dashboard. Would you like to sign in now?
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction>
-                  <Link href="/world-id">Sign In with World ID</Link>
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+        <p className="hero-description">Live in a housing estate where you want to HEAD home. Blockchain-based housing estate budget management, resident finance governance, and Homy powered by ORA Onchain-AI Oracle.</p>
+        <div className="flex space-x-4 mt-6">
+          {session ? (
+            <>
+              <Link href="/dashboard" passHref legacyBehavior>
+                <Button className="hero-button">Housing Estate Dashboard</Button>
+              </Link>
+              <Link href="/estate-sign-up" passHref legacyBehavior>
+                <Button className="hero-button">Sign Up Your Estate</Button>
+              </Link>
+            </>
+          ) : (
+            <>
+              <AuthButton>Housing Estate Dashboard</AuthButton>
+              <AuthButton>Sign Up Your Estate</AuthButton>
+            </>
+          )}
+        </div>
       </div>
       
       <ul className="hero-social">
-        <li><a href="#"><Image src="/facebook.svg" alt="Facebook" width={30} height={30} /></a></li>
-        <li><a href="#"><Image src="/instagram.svg" alt="Instagram" width={30} height={30} /></a></li>
+        <li>
+          <Link href="https://facebook.com" passHref legacyBehavior>
+            <Button variant="ghost" className="p-0" aria-label="Facebook">
+              <Image src="/facebook.svg" alt="" width={30} height={30} />
+            </Button>
+          </Link>
+        </li>
+        <li>
+          <Link href="https://instagram.com" passHref legacyBehavior>
+            <Button variant="ghost" className="p-0" aria-label="Instagram">
+              <Image src="/instagram.svg" alt="" width={30} height={30} />
+            </Button>
+          </Link>
+        </li>
       </ul>
+    </>
+  ), [session]);
+
+  return (
+    <div className="hero-showcase">
+      <FlashlightEffect />
+      {content}
     </div>
   );
 };

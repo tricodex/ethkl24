@@ -237,3 +237,8 @@ body {
   }
 
 }
+
+.hero-flashlight-mask {
+  mask-image: radial-gradient(circle 15vmin at var(--mask-position-x) var(--mask-position-y), black, transparent);
+  -webkit-mask-image: radial-gradient(circle 15vmin at var(--mask-position-x) var(--mask-position-y), black, transparent);
+}
