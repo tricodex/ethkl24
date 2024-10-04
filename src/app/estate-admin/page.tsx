@@ -3,7 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-import HEADDashboard from '@/components/head-dashboard'
+import EstateAdminDashboard from '@/components/estate-admin-dashboard'
 
 export default function DashboardPage() {
   const router = useRouter()
@@ -14,22 +14,16 @@ export default function DashboardPage() {
     if (!session) {
       router.push('/login') // Redirect to login if not authenticated
     } else {
-      // Check if the user is a HEAD owner
-
+      // Determine user role and redirect if necessary
       const checkUserRole = async () => {
         // Example: const userRole = await getUserRole(session.user.id)
-        const userRole = 'head_admin' // Placeholder
-        if (userRole !== 'head_admin') {
-          // Redirect to appropriate dashboard based on role
-          if (userRole === 'estate_admin') {
-            router.push('/estate-admin')
-          } else if (userRole === 'resident') {
-            router.push('/estate-resident')
-          } else {
-            // Handle unknown role
-            router.push('/unauthorized')
-          }
+        const userRole = 'estate_admin' // Placeholder
+        if (userRole === 'estate_admin') {
+          router.push('/estate-admin')
+        } else if (userRole === 'resident') {
+          router.push('/estate-resident')
         }
+        // If role is 'head_admin', stay on this page
       }
       checkUserRole()
     }
@@ -39,9 +33,5 @@ export default function DashboardPage() {
     return <div>Loading...</div>
   }
 
-  if (!session) {
-    return null // This will prevent the dashboard from flashing before redirect
-  }
-
-  return <HEADDashboard />
+  return <EstateAdminDashboard />
 }

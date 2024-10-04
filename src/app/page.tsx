@@ -5,6 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import WorldCoinAuthButton from './_components/auth-button';
 
@@ -85,9 +87,18 @@ AuthButton.displayName = 'AuthButton';
 
 const LandingPage: React.FC = () => {
   const { data: session } = useSession();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const content = useMemo(() => (
     <>
+      <div className="absolute top-4 right-4 flex items-center space-x-2">
+        <Label htmlFor="admin-mode" className="text-white">Admin Mode</Label>
+        <Switch
+          id="admin-mode"
+          checked={isAdmin}
+          onCheckedChange={setIsAdmin}
+        />
+      </div>
       <div className="hero-text">
         <h2 className="hero-title">
           <span>Let&apos;s</span>
@@ -98,19 +109,19 @@ const LandingPage: React.FC = () => {
         </h2>
         <h3 className="hero-subtitle">Housing Estate Association Decentralized</h3>
         <p className="hero-description">Live in a housing estate where you want to HEAD home. Blockchain-based housing estate budget management, resident finance governance, and Homy powered by ORA Onchain-AI Oracle.</p>
-        <div className="flex space-x-4 mt-6">
+        <div className="flex items-center space-x-4 mt-6">
           {session ? (
             <>
-              <Link href="/dashboard" passHref legacyBehavior>
-                <Button className="hero-button">Housing Estate Dashboard</Button>
+              <Link href={isAdmin ? "/estate-admin" : "/estate-resident"} passHref legacyBehavior>
+                <Button className="hero-button">My HEAD</Button>
               </Link>
               <Link href="/estate-sign-up" passHref legacyBehavior>
-                <Button className="hero-button">Sign Up Your Estate</Button>
+                <Button className="hero-button">Estate Sign Up</Button>
               </Link>
             </>
           ) : (
             <>
-              <AuthButton>Housing Estate Dashboard</AuthButton>
+              <AuthButton>{isAdmin ? "Admin Dashboard" : "Resident Dashboard"}</AuthButton>
               <AuthButton>Sign Up Your Estate</AuthButton>
             </>
           )}
@@ -134,7 +145,7 @@ const LandingPage: React.FC = () => {
         </li>
       </ul>
     </>
-  ), [session]);
+  ), [session, isAdmin]);
 
   return (
     <div className="hero-showcase">

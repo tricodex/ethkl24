@@ -10,7 +10,7 @@ const PROPERTY_ABI = [
   // Add the ABI for the Property contract here
 ] as const;
 
-export const deployProperty = async (initBalance: string, name: string): Promise<`0x${string}`> => {
+export const deployProperty = async (initBalance: string, name: string, householdName: string): Promise<`0x${string}`> => {
   const publicClient = getPublicClient();
   const walletClient = getWalletClient();
   const address = await getWalletAddress();

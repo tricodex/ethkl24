@@ -1,0 +1,25 @@
+{
+    "estate": {
+      "name": "Sunnyvale Residences",
+      "totalProperties": 50,
+      "totalResidents": 120,
+      "activeProposals": 3,
+      "monthlyServicePayments": 24000
+    },
+    "payments": [
+      { "resident": "Alice Johnson", "unit": "A101", "amount": "$200", "status": "Paid", "date": "2024-03-01" },
+      { "resident": "Bob Smith", "unit": "B205", "amount": "$200", "status": "Pending", "date": "2024-03-05" },
+      { "resident": "Carol Williams", "unit": "C310", "amount": "$200", "status": "Paid", "date": "2024-03-02" }
+    ],
+    "proposals": [
+      { "title": "Upgrade Lobby Furniture", "votes": 45, "threshold": 60, "description": "Replace old furniture in the main lobby with modern, comfortable seating." },
+      { "title": "Install Solar Panels", "votes": 72, "threshold": 70, "description": "Install solar panels on the roof to reduce electricity costs and improve sustainability." },
+      { "title": "Hire New Security Staff", "votes": 30, "threshold": 65, "description": "Hire additional security personnel to improve safety in the complex." }
+    ],
+    "properties": [
+      { "id": "1", "address": "123 Sunnyvale Lane", "unit": "A101", "owner": "Alice Johnson", "status": "Occupied" },
+      { "id": "2", "address": "123 Sunnyvale Lane", "unit": "B205", "owner": "Bob Smith", "status": "Occupied" },
+      { "id": "3", "address": "123 Sunnyvale Lane", "unit": "C310", "owner": "Carol Williams", "status": "Occupied" },
+      { "id": "4", "address": "125 Sunnyvale Lane", "unit": "D401", "owner": "David Brown", "status": "Vacant" }
+    ]
+  }

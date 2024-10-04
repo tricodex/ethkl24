@@ -20,17 +20,15 @@ export function EstateSignUp(): JSX.Element {
   const [termsAccepted, setTermsAccepted] = useState<boolean>(false);
   const router = useRouter();
 
+  const householdName = 'Mock Household'; // Default estate name
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
-    if (!termsAccepted) {
-      setError('Please accept the terms and conditions.');
-      return;
-    }
     setIsLoading(true);
     setError('');
 
     try {
-      const hash = await deployProperty(initBalance, name);
+      const hash = await deployProperty(initBalance, name, householdName);
       console.log('Transaction hash:', hash);
       setStep(3); // Move to confirmation step
       // Delay navigation to show confirmation
@@ -44,67 +42,34 @@ export function EstateSignUp(): JSX.Element {
   };
 
   const handleNextStep = () => {
-    if (step === 1 && name && initBalance) {
+    if (step === 1 && termsAccepted) {
       setStep(2);
+    } else if (step === 2 && name && initBalance) {
+      setStep(3);
     }
   };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle>Sign Up Your Estate</CardTitle>
+        <CardTitle>HEAD Estate Sign Up</CardTitle>
         <CardDescription>
-          Deploy your Housing Estate Association on the blockchain for transparent and efficient management.
+          Deploy the Housing Estate Association on the blockchain for transparent and efficient management.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Progress value={(step / 3) * 100} className="mb-4" />
         <Tabs value={`step${step}`}>
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="step1" disabled={step < 1}>Estate Details</TabsTrigger>
-            <TabsTrigger value="step2" disabled={step < 2}>Terms &amp; Conditions</TabsTrigger>
+            <TabsTrigger value="step1" disabled={step < 1}>Terms &amp; Conditions</TabsTrigger>
+            <TabsTrigger value="step2" disabled={step < 2}>Estate Details</TabsTrigger>
             <TabsTrigger value="step3" disabled={step < 3}>Confirmation</TabsTrigger>
           </TabsList>
           <TabsContent value="step1">
-            <form onSubmit={(e) => { e.preventDefault(); handleNextStep(); }} className="space-y-4">
-              <div>
-                <Label htmlFor="name">Estate Name</Label>
-                <Input
-                  id="name"
-                  value={name}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
-                  required
-                  placeholder="e.g., Greenview Residences"
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  This name will be used to identify your estate on the blockchain.
-                </p>
-              </div>
-              <div>
-                <Label htmlFor="initBalance">Initial Balance (in ETH)</Label>
-                <Input
-                  id="initBalance"
-                  type="number"
-                  step="0.01"
-                  value={initBalance}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInitBalance(e.target.value)}
-                  required
-                  placeholder="e.g., 1.5"
-                />
-                <p className="text-sm text-muted-foreground mt-1">
-                  This amount will be used to initialize your estate&apos;s treasury on the blockchain.
-                </p>
-              </div>
-              <Button type="submit" disabled={!name || !initBalance}>
-                Next: Review Terms
-              </Button>
-            </form>
-          </TabsContent>
-          <TabsContent value="step2">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-4">
               <div className="text-sm">
                 <h3 className="font-semibold mb-2">Terms and Conditions</h3>
-                <p>By deploying your Housing Estate Association, you agree to the following:</p>
+                <p>By deploying the Housing Estate Association, you agree to the following:</p>
                 <ul className="list-disc pl-5 space-y-1 mt-2">
                   <li>All financial transactions will be recorded on the blockchain for transparency.</li>
                   <li>Estate members will have voting rights on proposals through smart contracts.</li>
@@ -124,13 +89,42 @@ export function EstateSignUp(): JSX.Element {
                   I accept the terms and conditions
                 </label>
               </div>
-              {error && (
-                <Alert variant="destructive">
-                  <AlertTitle>Error</AlertTitle>
-                  <AlertDescription>{error}</AlertDescription>
-                </Alert>
-              )}
-              <Button type="submit" disabled={isLoading || !termsAccepted}>
+              <Button onClick={handleNextStep} disabled={!termsAccepted}>
+                Next: Estate Details
+              </Button>
+            </div>
+          </TabsContent>
+          <TabsContent value="step2">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="name">Estate Name</Label>
+                <Input
+                  id="name"
+                  value={name}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
+                  required
+                  placeholder="e.g., Greenview Residences"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  This name will be used to identify the estate on the blockchain.
+                </p>
+              </div>
+              <div>
+                <Label htmlFor="initBalance">Initial Balance (in ETH)</Label>
+                <Input
+                  id="initBalance"
+                  type="number"
+                  step="0.01"
+                  value={initBalance}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInitBalance(e.target.value)}
+                  required
+                  placeholder="e.g., 1.5"
+                />
+                <p className="text-sm text-muted-foreground mt-1">
+                  This amount will be used to initialize the estate&apos;s treasury on the blockchain.
+                </p>
+              </div>
+              <Button type="submit" disabled={isLoading || !name || !initBalance}>
                 {isLoading ? 'Deploying...' : 'Deploy Property'}
               </Button>
             </form>
@@ -139,13 +133,19 @@ export function EstateSignUp(): JSX.Element {
             <div className="text-center space-y-4">
               <AlertTitle className="text-2xl font-bold text-green-600">Success!</AlertTitle>
               <AlertDescription>
-                Your Housing Estate Association has been successfully deployed on the blockchain.
+                [Name] Housing Estate Association has been successfully deployed on the blockchain.
                 You will be redirected to the dashboard shortly.
               </AlertDescription>
             </div>
           </TabsContent>
         </Tabs>
       </CardContent>
+      {error && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
       <CardFooter className="flex justify-between">
         <p className="text-sm text-muted-foreground">
           Need help? Contact our support team at support.head.home@gmail.com
