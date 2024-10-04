@@ -21,7 +21,7 @@ export default function RootLayout({
         <NextAuthSessionProvider>
         <TopNav />
 
-          <main className="container mx-auto p-4">
+          <main>
             {children}
           </main>
         </NextAuthSessionProvider>
