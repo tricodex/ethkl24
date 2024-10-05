@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { callHomy, getHoMyResponse } from "@/lib/homyClient";
+import { callHomy, getHomyResponse } from "@/lib/homyClient";
 
 export function ProposalWriter() {
   const [title, setTitle] = useState("");
@@ -20,7 +20,7 @@ export function ProposalWriter() {
       const receipt = await fetch(`/api/transaction/${hash}`);
       const { logs } = await receipt.json();
       const requestId = logs[0].topics[1];
-      const aiResponse = await getHoMyResponse(BigInt(requestId));
+      const aiResponse = await getHomyResponse(BigInt(requestId));
       setProposal(aiResponse);
     } catch (error) {
       console.error("Error calling Homy:", error);

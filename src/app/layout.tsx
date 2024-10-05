@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
-import NextAuthSessionProvider from '@/components/auth-provider';
+import NextAuthSessionProvider from '@/components/providers/auth-provider';
 import './globals.css';
 import TopNav from './_components/top-nav';
-import { MetaMaskProvider } from '@/components/MetaMaskProvider';
+import { MetaMaskProvider } from '@/components/providers/MetaMaskProvider';
 import ClientOnly from '@/components/ClientOnly';
 import { NextAuthProvider } from "@/components/providers/session-provider";
 
