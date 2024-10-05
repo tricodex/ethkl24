@@ -1,12 +1,14 @@
-// src/app/layout.tsx
+import type { Metadata } from 'next';
 import NextAuthSessionProvider from '@/components/auth-provider';
 import './globals.css';
-import type { Metadata } from 'next';
 import TopNav from './_components/top-nav';
+import { MetaMaskProvider } from '@/components/MetaMaskProvider';
+import ClientOnly from '@/components/ClientOnly';
+import { NextAuthProvider } from "@/components/providers/session-provider";
 
 export const metadata: Metadata = {
-  title: "PMDA",
-  description: "Authentication-enabled app",
+  title: "HEAD",
+  description: "Housing Estate Association Decentralized",
 };
 
 export default function RootLayout({
@@ -17,14 +19,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-
-        <NextAuthSessionProvider>
-        <TopNav />
-
-          <main>
-            {children}
-          </main>
-        </NextAuthSessionProvider>
+        <NextAuthProvider>
+          <ClientOnly>
+            <MetaMaskProvider>
+              <NextAuthSessionProvider>
+                <TopNav />
+                <main>
+                  {children}
+                </main>
+              </NextAuthSessionProvider>
+            </MetaMaskProvider>
+          </ClientOnly>
+        </NextAuthProvider>
       </body>
     </html>
   );

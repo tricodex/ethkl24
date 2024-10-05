@@ -25,7 +25,7 @@ export function AddHousehold({ estateAddress }: HouseholdFunctionsProps): JSX.El
     setError('');
     setSuccess('');
     try {
-      const hash = await deployProperty('0', ownerAddress as Address, householdName);
+      const hash = await deployProperty('0', ownerAddress as Address);
       console.log('Transaction hash:', hash);
       setSuccess(`Household added successfully. Transaction hash: ${hash}`);
     } catch (err) {

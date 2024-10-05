@@ -1,14 +1,16 @@
 "use client"
 
 import { useState } from "react"
-import { Building, ChevronDown, CreditCard, FileText, Home, Menu, MessageSquare, Settings, Vote } from "lucide-react"
+import { ChevronDown, CreditCard, FileText, Home, Menu, MessageSquare, Settings, Vote } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Textarea } from "@/components/ui/textarea"
 import { PayHouseholdFee } from './household-functions'
+import { PlanningAssistant } from './homy/PlanningAssistant'
+import { ProposalWriter } from './homy/ProposalWriter'
+import { ResidentChatbot } from './homy/ResidentChatbot'
 
 // Mock data 
 const RESIDENT = {
@@ -128,6 +130,8 @@ export default function EstateResidentDashboard() {
               <TabsList>
                 <TabsTrigger value="payments">Payment History</TabsTrigger>
                 <TabsTrigger value="proposals">Proposals</TabsTrigger>
+                <TabsTrigger value="planning">AI Planning</TabsTrigger>
+                <TabsTrigger value="proposal-writer">Proposal Writer</TabsTrigger>
                 <TabsTrigger value="chat">Chat with Homy</TabsTrigger>
               </TabsList>
               <TabsContent value="payments">
@@ -188,21 +192,33 @@ export default function EstateResidentDashboard() {
                   </CardContent>
                 </Card>
               </TabsContent>
+              <TabsContent value="planning">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>AI Planning Assistant</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <PlanningAssistant />
+                  </CardContent>
+                </Card>
+              </TabsContent>
+              <TabsContent value="proposal-writer">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Proposal Writer</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <ProposalWriter />
+                  </CardContent>
+                </Card>
+              </TabsContent>
               <TabsContent value="chat">
                 <Card>
                   <CardHeader>
                     <CardTitle>Chat with Homy</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
-                      <div className="h-[300px] border rounded p-4 overflow-y-auto">
-                        {/* Chat messages would go here */}
-                      </div>
-                      <div className="flex space-x-2">
-                        <Textarea placeholder="Type your message here..." />
-                        <Button>Send</Button>
-                      </div>
-                    </div>
+                    <ResidentChatbot />
                   </CardContent>
                 </Card>
               </TabsContent>

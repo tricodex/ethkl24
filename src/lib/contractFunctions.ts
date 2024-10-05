@@ -1,18 +1,36 @@
 import { getPublicClient, getWalletClient, getWalletAddress } from './viemClient';
-import { parseEther, Address } from 'viem';
+import { parseEther, Address, Hash } from 'viem';
 
-const DPMA_FACTORY_ADDRESS = '0x...' as const; 
+const DPMA_FACTORY_ADDRESS = '0x...' as const;
+const CONTROLLER_ADDRESS = '0x...' as const; 
+
 const DPMA_FACTORY_ABI = [
-  // Add the ABI for the DPMAFactory contract here
+  {
+    inputs: [
+      { name: 'initBalance', type: 'uint256' },
+      { name: '_owner', type: 'address' },
+      { name: '_name', type: 'string' }
+    ],
+    name: 'deployProperty',
+    outputs: [{ name: '', type: 'address' }],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
 ] as const;
 
 const PROPERTY_ABI = [
-  // Add the ABI for the Property contract here
+  {
+    inputs: [{ name: '_currMonth', type: 'uint8' }],
+    name: 'payFee',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function'
+  },
 ] as const;
 
-export const deployProperty = async (initBalance: string, name: string, householdName: string): Promise<`0x${string}`> => {
+export const deployProperty = async (initBalance: string, name: string): Promise<Address> => {
   const publicClient = getPublicClient();
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const address = await getWalletAddress();
 
   const { request } = await publicClient.simulateContract({
@@ -24,12 +42,16 @@ export const deployProperty = async (initBalance: string, name: string, househol
   });
 
   const hash = await walletClient.writeContract(request);
-  return hash;
+  const receipt = await publicClient.waitForTransactionReceipt({ hash });
+  
+  // Assuming the deployed property address is emitted in the first log
+  const propertyAddress = receipt.logs[0].address as Address;
+  return propertyAddress;
 };
 
-export const payPropertyFee = async (propertyAddress: Address, month: number): Promise<`0x${string}`> => {
+export const payPropertyFee = async (propertyAddress: Address, month: number): Promise<Hash> => {
   const publicClient = getPublicClient();
-  const walletClient = getWalletClient();
+  const walletClient = await getWalletClient();
   const address = await getWalletAddress();
 
   const { request } = await publicClient.simulateContract({
@@ -37,28 +59,6 @@ export const payPropertyFee = async (propertyAddress: Address, month: number): P
     abi: PROPERTY_ABI,
     functionName: 'payFee',
     args: [month],
-    account: address,
-  });
-
-  const hash = await walletClient.writeContract(request);
-  return hash;
-};
-
-export const addPropertyMembers = async (
-  propertyAddress: Address,
-  members: Address[],
-  month: number,
-  feeAmount: string
-): Promise<`0x${string}`> => {
-  const publicClient = getPublicClient();
-  const walletClient = getWalletClient();
-  const address = await getWalletAddress();
-
-  const { request } = await publicClient.simulateContract({
-    address: propertyAddress,
-    abi: PROPERTY_ABI,
-    functionName: 'addMembers',
-    args: [members, month, parseEther(feeAmount)],
     account: address,
   });
 

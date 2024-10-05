@@ -1,26 +1,36 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createPublicClient, createWalletClient, custom, http, PublicClient, WalletClient } from 'viem';
 import { scroll } from 'viem/chains';
 
-export const getPublicClient = (): PublicClient => {
-  return createPublicClient({
-    chain: scroll,
-    transport: http()
-  });
-};
+let publicClientInstance: PublicClient | null = null;
+let walletClientInstance: WalletClient | null = null;
 
-export const getWalletClient = (): WalletClient => {
-  if (typeof window !== 'undefined' && (window as any).ethereum) {
-    return createWalletClient({
+export const getPublicClient = (): PublicClient => {
+  if (!publicClientInstance) {
+    publicClientInstance = createPublicClient({
       chain: scroll,
-      transport: custom((window as any).ethereum)
+      transport: http()
     });
   }
-  throw new Error('Ethereum provider not found');
+  return publicClientInstance;
+};
+
+export const getWalletClient = async (): Promise<WalletClient> => {
+  if (typeof window === 'undefined' || !window.ethereum) {
+    throw new Error('MetaMask not found. Please install MetaMask.');
+  }
+
+  if (!walletClientInstance) {
+    walletClientInstance = createWalletClient({
+      chain: scroll,
+      transport: custom(window.ethereum)
+    });
+  }
+
+  return walletClientInstance;
 };
 
 export const getWalletAddress = async (): Promise<`0x${string}`> => {
-  const client = getWalletClient();
+  const client = await getWalletClient();
   const [address] = await client.getAddresses();
   if (!address) throw new Error('No wallet address found');
   return address;

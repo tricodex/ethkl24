@@ -28,7 +28,7 @@ export function EstateSignUp(): JSX.Element {
     setError('');
 
     try {
-      const hash = await deployProperty(initBalance, name, householdName);
+      const hash = await deployProperty(initBalance, name);
       console.log('Transaction hash:', hash);
       setStep(3); // Move to confirmation step
       // Delay navigation to show confirmation

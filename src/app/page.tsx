@@ -109,7 +109,7 @@ const LandingPage: React.FC = () => {
         </h2>
         <h3 className="hero-subtitle">Housing Estate Association Decentralized</h3>
         <p className="hero-description">Live in a housing estate where you want to HEAD home. Blockchain-based housing estate budget management, resident finance governance, and Homy powered by ORA Onchain-AI Oracle.</p>
-        <div className="flex items-center space-x-4 mt-6">
+        <div className="flex flex-col items-center space-y-4 mt-6 w-full">
           {session ? (
             <>
               <Link href={isAdmin ? "/estate-admin" : "/estate-resident"} passHref legacyBehavior>
@@ -121,7 +121,7 @@ const LandingPage: React.FC = () => {
             </>
           ) : (
             <>
-              <AuthButton>{isAdmin ? "Admin Dashboard" : "Resident Dashboard"}</AuthButton>
+              <AuthButton>{isAdmin ? "Admin Login" : "Login"}</AuthButton>
               <AuthButton>Sign Up Your Estate</AuthButton>
             </>
           )}
