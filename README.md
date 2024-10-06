@@ -11,10 +11,26 @@ HEAD (Housing Estate Association Decentralized) is a blockchain-based applicatio
 
 ## Smart Contracts
 
+
 The project so far uses two main smart contracts:
 
 1. `DPMAFactory`: For deploying and managing individual property contracts.
 2. `Property`: Represents an individual housing estate and manages its finances and residents.
+
+Smart contract reop: (DPMA Core Contracts)(https://github.com/Abhishekkochar/PMA)
+
+## Scroll testnet contracts
+
+### DPMA factory
+[0x2C3A5ad03e766CFF6fa7911eFa184cFe04235382](https://sepolia.scrollscan.com/address/0x2C3A5ad03e766CFF6fa7911eFa184cFe04235382)
+
+### Controller
+[0x64934671E64C6d1EEb92eF9085B72bA6aF9c69fB](https://sepolia.scrollscan.com/address/0x64934671E64C6d1EEb92eF9085B72bA6aF9c69fB)
+
+### Mock ERC20
+[0x5920257792dbba08dfadd34607b781e3c2cdb3cf](https://sepolia.scrollscan.com/address/0x5920257792dbba08dfadd34607b781e3c2cdb3cf)
+
+
 
 These contracts are deployed on the (Scroll/Manta) network. Users need a wallet (e.g., MetaMask) connected to the Scroll network to interact with the application.
 
