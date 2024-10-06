@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+// Remove this line: import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { getPublicClient, getWalletClient, getWalletAddress } from '@/lib/viemClient'
-import { parseEther, formatEther, Abi, Address } from 'viem'
+import { formatEther, Abi, Address } from 'viem'
+// Remove parseEther from this line
 import PropertyABI from '@/lib/abis/Property.json'
 
 interface ResidentDashboardProps {
@@ -158,7 +159,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md app-font-kanit">Welcome to your Resident Dashboard. Here you can view and manage your payments for the property. If you're new to Web3, don't worry—just follow the instructions, and ensure your wallet is connected.</p>
+          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md app-font-kanit">Welcome to your Resident Dashboard. Here you can view and manage your payments for the property. If you&apos;re new to Web3, don&apos;t worry—just follow the instructions, and ensure your wallet is connected.</p>
 
           <div className="app-property-details">
             <p className="app-section-header">Property Details:</p>

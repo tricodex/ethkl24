@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
@@ -156,7 +156,7 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md app-font-kanit">Welcome to the Property Admin Dashboard. Here you can manage property details, add new members, and view financial summaries. If you are new to Web3, don't worry—just follow the instructions, and ensure your wallet is connected.</p>
+          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md app-font-kanit">Welcome to the Property Admin Dashboard. Here you can manage property details, add new members, and view financial summaries. If you are new to Web3, don&apos;t worry—just follow the instructions, and ensure your wallet is connected.</p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <InfoCard title="Property Balance" value={`${balance} ETH`} />
