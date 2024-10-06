@@ -1,6 +1,6 @@
 # HEAD - Housing Estate Association Decentralized
 
-![HEAD(public/image.png)
+![HEAD](public/image.png)
 
 
 HEAD (Housing Estate Association Decentralized) is a blockchain-based application for managing housing estates. It provides a decentralized platform for property management, resident finance governance, and AI-assisted planning.
