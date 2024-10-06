@@ -112,7 +112,7 @@ const LandingPage: React.FC = () => {
         <div className="flex flex-col items-center space-y-4 mt-6 w-full">
           {session ? (
             <>
-              <Link href={isAdmin ? "/estate-admin" : "/estate-resident"} passHref legacyBehavior>
+              <Link href={isAdmin ? "/dash" : "/dash"} passHref legacyBehavior>
                 <Button className="hero-button">My HEAD</Button>
               </Link>
               <Link href="/estate-sign-up" passHref legacyBehavior>

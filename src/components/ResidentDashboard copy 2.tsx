@@ -1,13 +1,12 @@
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
 import { getPublicClient, getWalletClient, getWalletAddress } from '@/lib/viemClient'
 import { parseEther, formatEther, Abi, Address } from 'viem'
-import PropertyABI from '@/lib/abis/Property.json'
+import PropertyABI from '@/lib/abis/PropertyX.json'
 
 interface ResidentDashboardProps {
   propertyAddress: string
@@ -31,6 +30,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
   const [totalExpenses, setTotalExpenses] = useState<string>("0")
   const [totalFeePaid, setTotalFeePaid] = useState<string>("0")
 
+  // Fetch property details like balance, expenses, and total fees paid
   const fetchPropertyDetails = useCallback(async () => {
     if (!propertyAddress) return
     try {
@@ -67,6 +67,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
     }
   }, [propertyAddress])
 
+  // Check if the resident is an active member and their payment status
   const checkMemberStatus = useCallback(async () => {
     if (!propertyAddress || !residentAddress) return
     setError(null)
@@ -75,7 +76,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
       const status = await publicClient.readContract({
         address: propertyAddress as Address,
         abi: PropertyABI.abi as Abi,
-        functionName: 'activeMember',
+        functionName: 'getMemberStatus',
         args: [residentAddress as Address, BigInt(currentMonth + 1)],
       }) as [boolean, boolean, bigint, bigint, bigint]
 
@@ -92,6 +93,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
     }
   }, [propertyAddress, residentAddress, currentMonth])
 
+  // Fetch wallet address and set resident address
   useEffect(() => {
     const setup = async () => {
       try {
@@ -105,18 +107,21 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
     setup()
   }, [])
 
+  // Fetch property details when component is mounted
   useEffect(() => {
     if (propertyAddress) {
       fetchPropertyDetails()
     }
   }, [propertyAddress, fetchPropertyDetails])
 
+  // Check member status when resident address or month changes
   useEffect(() => {
     if (residentAddress && propertyAddress) {
       checkMemberStatus()
     }
   }, [residentAddress, propertyAddress, currentMonth, checkMemberStatus])
 
+  // Handle fee payment
   const payFee = async () => {
     if (!propertyAddress || !residentAddress) {
       setError("Invalid property or resident address")
@@ -158,21 +163,20 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md app-font-kanit">Welcome to your Resident Dashboard. Here you can view and manage your payments for the property. If you're new to Web3, don't worry—just follow the instructions, and ensure your wallet is connected.</p>
+          <p className="text-sm text-gray-700 bg-blue-50 p-4 rounded-md">Welcome to your Resident Dashboard. Here you can view and manage your payments for the property. Ensure your wallet is connected.</p>
 
-          <div className="app-property-details">
-            <p className="app-section-header">Property Details:</p>
+          <div>
             <p><strong>Property Address:</strong> {propertyAddress}</p>
             <p><strong>Resident Address:</strong> {residentAddress || 'Loading...'}</p>
-            <p><strong>Property Balance:</strong> {propertyBalance} ETH (Funds available for property maintenance and expenses)</p>
-            <p><strong>Total Expenses:</strong> {totalExpenses} ETH (Expenses paid by the property)</p>
-            <p><strong>Total Fees Paid:</strong> {totalFeePaid} ETH (Total amount of fees collected from residents)</p>
+            <p><strong>Property Balance:</strong> {propertyBalance} ETH</p>
+            <p><strong>Total Expenses:</strong> {totalExpenses} ETH</p>
+            <p><strong>Total Fees Paid:</strong> {totalFeePaid} ETH</p>
           </div>
 
-          <div className="app-property-details">
-            <Label htmlFor="currentMonth" className="app-label">Select Month for Payment</Label>
+          <div>
+            <Label htmlFor="currentMonth">Select Month for Payment</Label>
             <select
-            title='month'
+            title="currentMonth"
               id="currentMonth"
               value={currentMonth}
               onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
@@ -182,35 +186,28 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
                 <option key={index} value={index}>{month}</option>
               ))}
             </select>
-            <p className="text-sm text-gray-600 mt-2">Make sure you select the correct month for which you want to pay the fee. This helps us keep track of the payments efficiently.</p>
           </div>
 
-          <div className="app-property-details">
-            <p className="app-section-header">Membership Status:</p>
+          <div>
             <p><strong>Status:</strong> {isActiveMember ? "Active Member" : "Not a Member"}</p>
             <p><strong>Monthly Fee:</strong> {feeAmount} ETH</p>
-            <p><strong>Payment Status:</strong> {paymentStatus ? "Paid for this Month" : "Not Paid"}</p>
-            {!isActiveMember && <p className="text-sm text-red-600">It seems like you are not an active member yet. Please contact the property administrator for more information.</p>}
+            <p><strong>Payment Status:</strong> {paymentStatus ? "Paid" : "Not Paid"}</p>
           </div>
 
-          <Button
-            onClick={payFee}
-            disabled={loading || paymentStatus || !isActiveMember}
-            className="app-button"
-          >
-            {loading ? <Spinner className="app-spinner" /> : null}
+          <Button onClick={payFee} disabled={loading || paymentStatus || !isActiveMember}>
+            {loading ? <Spinner /> : null}
             {paymentStatus ? 'Fee Already Paid' : isActiveMember ? 'Pay Monthly Fee' : 'Not Eligible to Pay Fee'}
           </Button>
 
           {error && (
-            <Alert className="app-alert-error">
+            <Alert>
               <AlertTitle>Error</AlertTitle>
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
 
           {success && (
-            <Alert className="app-alert-success">
+            <Alert>
               <AlertTitle>Success</AlertTitle>
               <AlertDescription>{success}</AlertDescription>
             </Alert>

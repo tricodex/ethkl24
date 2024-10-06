@@ -4,13 +4,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Separator } from "@/components/ui/separator"
 import { Spinner } from "@/components/ui/spinner"
 import { Switch } from "@/components/ui/switch"
 import { getPublicClient, getWalletClient, getWalletAddress } from '@/lib/viemClient'
 import { parseEther, formatEther, Abi, Address } from 'viem'
-import PropertyABI from '@/lib/abis/Property.json'
+import PropertyABI from '@/lib/abis/PropertyX.json'
 
 interface PropertyAdminDashboardProps {
   propertyAddress: string
@@ -53,7 +53,7 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
         publicClient.readContract({
           address: propertyAddress as Address,
           abi: PropertyABI.abi as Abi,
-          functionName: 'totalFeePaid',
+          functionName: 'totaFeePaid', // Updated function name based on ABI
         })
       ])
       setBalance(formatEther(balance as bigint))
@@ -75,62 +75,37 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
     setLoading(true)
     setError(null)
     setSuccess(null)
-  
+
     try {
-      // Validate member address
-      if (!newMemberAddress || !/^0x[a-fA-F0-9]{40}$/.test(newMemberAddress)) {
-        throw new Error("Invalid member address provided.")
-      }
-  
       const publicClient = getPublicClient()
       const walletClient = await getWalletClient()
       const address = await getWalletAddress()
-  
-      // Simulate the contract interaction first to detect any issues beforehand
-      try {
-        console.log('Simulating contract interaction...')
-        const { request } = await publicClient.simulateContract({
-          account: address,
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'addMembers',
-          args: [[newMemberAddress], BigInt(currentMonth + 1), parseEther(feeAmount)],
-        })
-        console.log('Simulation successful:', request)
-  
-        // Execute the transaction if simulation succeeds
-        console.log('Executing transaction...')
-        const hash = await walletClient.writeContract(request)
-        console.log('Transaction sent, hash:', hash)
-  
-        await publicClient.waitForTransactionReceipt({ hash })
-        console.log('Transaction confirmed.')
-  
-        setSuccess(`Member added/updated successfully. Transaction hash: ${hash}`)
-        fetchPropertyDetails()
-        setNewMemberAddress("")
-        setFeeAmount("0.1")
-      } catch (simulationError) {
-        console.error('Simulation error:', simulationError)
-        throw new Error('Simulation failed. This might be due to incorrect input data or insufficient permissions.')
-      }
+
+      const { request } = await publicClient.simulateContract({
+        account: address,
+        address: propertyAddress as Address,
+        abi: PropertyABI.abi as Abi,
+        functionName: 'addMembers', // Compliant with ABI
+        args: [[newMemberAddress], BigInt(currentMonth + 1), parseEther(feeAmount)],
+      })
+
+      const hash = await walletClient.writeContract(request)
+
+      await publicClient.waitForTransactionReceipt({ hash })
+
+      setSuccess(`Member added/updated successfully. Transaction hash: ${hash}`)
+      fetchPropertyDetails()
+      setNewMemberAddress("")
+      setFeeAmount("0.1")
     } catch (err) {
       console.error('Error adding/updating member:', err)
-  
-      // Handle known errors and unknown ones separately
-      if (err instanceof Error) {
-        setError(err.message)
-      } else if (typeof err === 'object' && err !== null) {
-        setError(`Unexpected error: ${JSON.stringify(err)}`)
-      } else {
-        setError('An unknown error occurred while adding/updating the member.')
-      }
+      setError(err instanceof Error ? err.message : 'An error occurred while adding/updating the member.')
     } finally {
       setLoading(false)
       setIsConfirmDialogOpen(false)
     }
   }
-  
+
   const fetchCurrentMembers = useCallback(async () => {
     if (!propertyAddress) return
     try {
@@ -183,7 +158,7 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
             <div className="space-y-2">
               <Label htmlFor="currentMonth" className="app-label">Select Month</Label>
               <select
-                title='Select Month'
+              title="month"
                 id="currentMonth"
                 value={currentMonth}
                 onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
