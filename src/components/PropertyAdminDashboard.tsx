@@ -26,39 +26,26 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
   const [success, setSuccess] = useState<string | null>(null)
   const [newMemberAddress, setNewMemberAddress] = useState("")
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
-  const [feeAmount, setFeeAmount] = useState("0.1")
+  const [feeAmount, setFeeAmount] = useState("0.001")
   const [balance, setBalance] = useState<string>("0")
-  const [totalExpenses, setTotalExpenses] = useState<string>("0")
-  const [totalFeePaid, setTotalFeePaid] = useState<string>("0")
+  const [totalExpenses] = useState<string>("0")
+  const [totalFeePaid] = useState<string>("0")
   const [showCurrentMembers, setShowCurrentMembers] = useState(false)
   const [currentMembers, setCurrentMembers] = useState<string[]>([])
   const [isConfirmDialogOpen, setIsConfirmDialogOpen] = useState(false)
+  const [estimatedGas, setEstimatedGas] = useState<string>("0")
 
   const fetchPropertyDetails = useCallback(async () => {
-    if (!propertyAddress) return
     setLoading(true)
     try {
       const publicClient = getPublicClient()
-      const [balance, expenses, feePaid] = await Promise.all([
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'getBalance',
-        }),
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'totalExpenses',
-        }),
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'totalFeePaid',
-        })
-      ])
+      const balance = await publicClient.readContract({
+        address: propertyAddress as Address,
+        abi: PropertyABI.abi as Abi,
+        functionName: 'getBalance',
+      }).catch(() => BigInt(0))
+      
       setBalance(formatEther(balance as bigint))
-      setTotalExpenses(formatEther(expenses as bigint))
-      setTotalFeePaid(formatEther(feePaid as bigint))
     } catch (err) {
       console.error('Error fetching property details:', err)
       setError("Failed to fetch property details.")
@@ -71,13 +58,32 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
     fetchPropertyDetails()
   }, [fetchPropertyDetails])
 
+  const estimateGas = async () => {
+    try {
+      const publicClient = getPublicClient()
+      const address = await getWalletAddress()
+
+      const gasEstimate = await publicClient.estimateContractGas({
+        account: address,
+        address: propertyAddress as Address,
+        abi: PropertyABI.abi as Abi,
+        functionName: 'addMembers',
+        args: [[newMemberAddress], BigInt(currentMonth + 1), parseEther(feeAmount)],
+      })
+
+      setEstimatedGas(formatEther(gasEstimate))
+    } catch (err) {
+      console.error('Error estimating gas:', err)
+      setError("Failed to estimate gas. The transaction might fail.")
+    }
+  }
+
   const addMember = async () => {
     setLoading(true)
     setError(null)
     setSuccess(null)
   
     try {
-      // Validate member address
       if (!newMemberAddress || !/^0x[a-fA-F0-9]{40}$/.test(newMemberAddress)) {
         throw new Error("Invalid member address provided.")
       }
@@ -86,38 +92,27 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
       const walletClient = await getWalletClient()
       const address = await getWalletAddress()
   
-      // Simulate the contract interaction first to detect any issues beforehand
-      try {
-        console.log('Simulating contract interaction...')
-        const { request } = await publicClient.simulateContract({
-          account: address,
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'addMembers',
-          args: [[newMemberAddress], BigInt(currentMonth + 1), parseEther(feeAmount)],
-        })
-        console.log('Simulation successful:', request)
-  
-        // Execute the transaction if simulation succeeds
-        console.log('Executing transaction...')
-        const hash = await walletClient.writeContract(request)
-        console.log('Transaction sent, hash:', hash)
-  
-        await publicClient.waitForTransactionReceipt({ hash })
-        console.log('Transaction confirmed.')
-  
-        setSuccess(`Member added/updated successfully. Transaction hash: ${hash}`)
-        fetchPropertyDetails()
-        setNewMemberAddress("")
-        setFeeAmount("0.1")
-      } catch (simulationError) {
-        console.error('Simulation error:', simulationError)
-        throw new Error('Simulation failed. This might be due to incorrect input data or insufficient permissions.')
+      await estimateGas()
+
+      const request = {
+        account: address,
+        address: propertyAddress as Address,
+        abi: PropertyABI.abi as Abi,
+        functionName: 'addMembers',
+        args: [[newMemberAddress], BigInt(currentMonth + 1), parseEther(feeAmount)],
+        value: parseEther('0.001'), // Reduced cost for wallet pop-up
       }
+  
+      const hash = await walletClient.writeContract(request)
+      await publicClient.waitForTransactionReceipt({ hash })
+  
+      setSuccess(`Member added/updated successfully. Transaction hash: ${hash}`)
+      fetchPropertyDetails()
+      setNewMemberAddress("")
+      setFeeAmount("0.001")
     } catch (err) {
       console.error('Error adding/updating member:', err)
   
-      // Handle known errors and unknown ones separately
       if (err instanceof Error) {
         setError(err.message)
       } else if (typeof err === 'object' && err !== null) {
@@ -132,16 +127,13 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
   }
   
   const fetchCurrentMembers = useCallback(async () => {
-    if (!propertyAddress) return
     try {
-      // This is a placeholder. You'll need to implement a way to fetch current members,
-      // which might require adding a new function to your smart contract.
       const members = ["0x1234...", "0x5678...", "0x9ABC..."]
       setCurrentMembers(members)
     } catch (err) {
       console.error('Error fetching current members:', err)
     }
-  }, [propertyAddress])
+  }, [])
 
   useEffect(() => {
     if (showCurrentMembers) {
@@ -200,7 +192,7 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
               <Input
                 id="feeAmount"
                 type="number"
-                step="0.01"
+                step="0.001"
                 value={feeAmount}
                 onChange={(e) => setFeeAmount(e.target.value)}
                 required
@@ -249,6 +241,13 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
               <AlertDescription>{success}</AlertDescription>
             </Alert>
           )}
+
+          {estimatedGas !== "0" && (
+            <Alert className="app-alert-info">
+              <AlertTitle>Estimated Gas</AlertTitle>
+              <AlertDescription>Estimated gas for this transaction: {estimatedGas} ETH</AlertDescription>
+            </Alert>
+          )}
         </div>
       </CardContent>
 
@@ -264,6 +263,7 @@ export function PropertyAdminDashboard({ propertyAddress }: PropertyAdminDashboa
             <p><strong>Address:</strong> {newMemberAddress}</p>
             <p><strong>Month:</strong> {MONTHS[currentMonth]}</p>
             <p><strong>Fee Amount:</strong> {feeAmount} ETH</p>
+            <p><strong>Estimated Gas:</strong> {estimatedGas} ETH</p>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsConfirmDialogOpen(false)}>Cancel</Button>

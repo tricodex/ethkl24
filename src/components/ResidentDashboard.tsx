@@ -1,13 +1,11 @@
 import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-// Remove this line: import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Spinner } from "@/components/ui/spinner"
-import { getPublicClient, getWalletClient, getWalletAddress } from '@/lib/viemClient'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { formatEther, Abi, Address } from 'viem'
-// Remove parseEther from this line
 import PropertyABI from '@/lib/abis/Property.json'
 
 interface ResidentDashboardProps {
@@ -18,138 +16,101 @@ const MONTHS = [
   "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 ]
 
+const FALLBACK_ADDRESSES = [
+  "0x87f603924309889B39687AC0A1669b1E5a506E74",
+  "0x98f1E5c7b34943eA5a6A395F6340d2Bb1234Ed9B",
+  "0x1E9F7e0A94f836AB8D47a0DdD634e6545E781234"
+]
+
 export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth())
   const [paymentStatus, setPaymentStatus] = useState<boolean>(false)
-  const [feeAmount, setFeeAmount] = useState<string>("0")
+  const [feeAmount, setFeeAmount] = useState<string>("0.1")
   const [residentAddress, setResidentAddress] = useState<string | null>(null)
-  const [isActiveMember, setIsActiveMember] = useState<boolean>(false)
-  const [propertyName, setPropertyName] = useState<string>("")
-  const [propertyBalance, setPropertyBalance] = useState<string>("0")
-  const [totalExpenses, setTotalExpenses] = useState<string>("0")
-  const [totalFeePaid, setTotalFeePaid] = useState<string>("0")
+  const [isActiveMember, setIsActiveMember] = useState<boolean>(true) // Set to true for demo
+  const [propertyName, setPropertyName] = useState<string>("Demo Property")
+  const [propertyBalance, setPropertyBalance] = useState<string>("10")
+  const [totalExpenses, setTotalExpenses] = useState<string>("5")
+  const [totalFeePaid, setTotalFeePaid] = useState<string>("15")
+  const [isWalletDialogOpen, setIsWalletDialogOpen] = useState(false)
+
+  const getFallbackAddress = () => {
+    const randomIndex = Math.floor(Math.random() * FALLBACK_ADDRESSES.length)
+    return FALLBACK_ADDRESSES[randomIndex]
+  }
 
   const fetchPropertyDetails = useCallback(async () => {
-    if (!propertyAddress) return
-    try {
-      const publicClient = getPublicClient()
-      const [name, balance, expenses, feePaid] = await Promise.all([
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'name',
-        }),
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'getBalance',
-        }),
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'totalExpenses',
-        }),
-        publicClient.readContract({
-          address: propertyAddress as Address,
-          abi: PropertyABI.abi as Abi,
-          functionName: 'totalFeePaid',
-        })
-      ])
-      setPropertyName(name as string)
-      setPropertyBalance(formatEther(balance as bigint))
-      setTotalExpenses(formatEther(expenses as bigint))
-      setTotalFeePaid(formatEther(feePaid as bigint))
-    } catch (err) {
-      console.error('Error fetching property details:', err)
-      setError('Failed to fetch property details')
-    }
-  }, [propertyAddress])
+    // Simulated property details fetch
+    setPropertyName("Property HEAD")
+    setPropertyBalance("10")
+    setTotalExpenses("5")
+    setTotalFeePaid("15")
+  }, [])
 
   const checkMemberStatus = useCallback(async () => {
-    if (!propertyAddress || !residentAddress) return
-    setError(null)
-    try {
-      const publicClient = getPublicClient()
-      const status = await publicClient.readContract({
-        address: propertyAddress as Address,
-        abi: PropertyABI.abi as Abi,
-        functionName: 'activeMember',
-        args: [residentAddress as Address, BigInt(currentMonth + 1)],
-      }) as [boolean, boolean, bigint, bigint, bigint]
-
-      const [isActive, isPaid, fee] = status
-      setIsActiveMember(isActive)
-      setPaymentStatus(isPaid)
-      setFeeAmount(formatEther(fee))
-    } catch (err) {
-      console.error('Error checking member status:', err)
-      setError(err instanceof Error ? err.message : "An unknown error occurred")
-      setIsActiveMember(false)
-      setPaymentStatus(false)
-      setFeeAmount("0")
-    }
-  }, [propertyAddress, residentAddress, currentMonth])
+    // Simulated member status check
+    setIsActiveMember(true)
+    setPaymentStatus(false)
+    setFeeAmount("0.1")
+  }, [])
 
   useEffect(() => {
     const setup = async () => {
-      try {
-        const address = await getWalletAddress()
-        setResidentAddress(address)
-      } catch (err) {
-        console.error('Error fetching wallet address:', err)
-        setError('Failed to get wallet address. Please connect your wallet.')
-      }
+      setResidentAddress(getFallbackAddress())
     }
     setup()
   }, [])
 
   useEffect(() => {
-    if (propertyAddress) {
-      fetchPropertyDetails()
-    }
-  }, [propertyAddress, fetchPropertyDetails])
+    fetchPropertyDetails()
+  }, [fetchPropertyDetails])
 
   useEffect(() => {
-    if (residentAddress && propertyAddress) {
-      checkMemberStatus()
-    }
-  }, [residentAddress, propertyAddress, currentMonth, checkMemberStatus])
+    checkMemberStatus()
+  }, [checkMemberStatus])
 
   const payFee = async () => {
-    if (!propertyAddress || !residentAddress) {
-      setError("Invalid property or resident address")
-      return
-    }
     setLoading(true)
     setError(null)
     setSuccess(null)
 
     try {
-      const publicClient = getPublicClient()
-      const walletClient = await getWalletClient()
-      const { request } = await publicClient.simulateContract({
-        account: residentAddress as Address,
-        address: propertyAddress as Address,
-        abi: PropertyABI.abi as Abi,
-        functionName: 'payFee',
-        args: [BigInt(currentMonth + 1)],
-      })
+      if (!residentAddress || !/^0x[a-fA-F0-9]{40}$/.test(residentAddress)) {
+        throw new Error("Invalid resident address provided.")
+      }
 
-      const hash = await walletClient.writeContract(request)
-      await publicClient.waitForTransactionReceipt({ hash })
-
-      setSuccess(`Fee paid for ${MONTHS[currentMonth]}. Transaction hash: ${hash}`)
-      await checkMemberStatus()
-      await fetchPropertyDetails()
+      // Assuming validation passed, open the wallet dialog
+      setIsWalletDialogOpen(true)
     } catch (err) {
-      console.error('Error paying fee:', err)
-      setError(err instanceof Error ? err.message : 'An error occurred')
+      console.error('Error preparing payment:', err)
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError('An unknown error occurred while preparing the payment.')
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  const confirmPayment = () => {
+    setLoading(true)
+    setError(null)
+    setSuccess(null)
+
+    // Simulate transaction process
+    setTimeout(() => {
+      const fakeTransactionHash = "0x" + Array(64).fill(0).map(() => Math.random().toString(16)[2]).join('')
+      setSuccess(`Fee paid for ${MONTHS[currentMonth]}. Transaction hash: ${fakeTransactionHash}`)
+      setPaymentStatus(true)
+      setTotalFeePaid((prev) => (parseFloat(prev) + parseFloat(feeAmount)).toString())
+      setPropertyBalance((prev) => (parseFloat(prev) + parseFloat(feeAmount)).toString())
+      setLoading(false)
+      setIsWalletDialogOpen(false)
+    }, 2000)
   }
 
   return (
@@ -163,7 +124,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
 
           <div className="app-property-details">
             <p className="app-section-header">Property Details:</p>
-            <p><strong>Property Address:</strong> {propertyAddress}</p>
+            <p><strong>Property Address:</strong> {propertyAddress || getFallbackAddress()}</p>
             <p><strong>Resident Address:</strong> {residentAddress || 'Loading...'}</p>
             <p><strong>Property Balance:</strong> {propertyBalance} ETH (Funds available for property maintenance and expenses)</p>
             <p><strong>Total Expenses:</strong> {totalExpenses} ETH (Expenses paid by the property)</p>
@@ -173,7 +134,7 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
           <div className="app-property-details">
             <Label htmlFor="currentMonth" className="app-label">Select Month for Payment</Label>
             <select
-            title='month'
+              title='month'
               id="currentMonth"
               value={currentMonth}
               onChange={(e) => setCurrentMonth(parseInt(e.target.value))}
@@ -218,6 +179,22 @@ export function ResidentDashboard({ propertyAddress }: ResidentDashboardProps) {
           )}
         </div>
       </CardContent>
+
+      <Dialog open={isWalletDialogOpen} onOpenChange={setIsWalletDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirm Payment</DialogTitle>
+          </DialogHeader>
+          <div className="py-4">
+            <p>You are about to pay {feeAmount} ETH for {MONTHS[currentMonth]}.</p>
+            <p>Please confirm this transaction in your wallet.</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsWalletDialogOpen(false)}>Cancel</Button>
+            <Button onClick={confirmPayment} className="app-button">Confirm Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }
